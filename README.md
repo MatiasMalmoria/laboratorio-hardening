@@ -1,24 +1,7 @@
 # Reporte Técnico de Configuración de Laboratorio
-### Mi Primer Laboratorio Seguro de Ciberseguridad
-
-| | |
-|---|---|
-| **Nombre y apellido** | _completar_ |
-| **Fecha** | 27/07/2026 |
-| **Sistemas operativos** | Windows 11 (VM principal) y Kali Linux 2026.2 (VM de herramientas) |
-| **Software de virtualización** | Oracle VirtualBox |
-
-Este documento certifica la creación y aislamiento de dos Máquinas Virtuales ("Máquinas de Prácticas") destinadas a ejercicios de ciberseguridad, siguiendo prácticas básicas de hardening: red aislada, cuenta de usuario sin privilegios, sistema actualizado y un punto de restauración (snapshot) inicial en cada una.
-
----
-
 ## 1. La Fundación: VirtualBox y Red Aislada
 
 ![Configuración de red NAT](screenshots/01-red-nat.png)
-*Configuración de red de la VM Windows: Adaptador 1 → "Conectado a: NAT"*
-
-### Explicación
-
 Configuré el adaptador de red de la VM en modo **NAT**. En este modo, la máquina virtual accede a internet a través de la IP del equipo anfitrión (Host), pero no es visible ni direccionable desde la red local (Wi-Fi/LAN) en la que está conectado el Host.
 
 **¿Por qué NAT y no Bridge (Puente)?**
@@ -34,8 +17,6 @@ Configuré el adaptador de red de la VM en modo **NAT**. En este modo, la máqui
 ### 2.1 Usuario estándar separado del Administrador
 
 ![Cuentas de usuario](screenshots/02-cuentas-usuario.png)
-*Panel de Control → Cuentas de usuario → Administrar cuentas: "vboxuser" y "admin" figuran como Administrador, mientras que "UsuarioSeguro" es cuenta local Estándar*
-
 Creé una cuenta de usuario ("UsuarioSeguro") de tipo Estándar, distinta de las cuentas Administrador ("vboxuser" y "admin") que existen en el sistema. El trabajo diario dentro de la VM (abrir herramientas, navegar, ejecutar prácticas) se realiza con la cuenta Estándar.
 
 **¿Por qué es importante?**
@@ -46,8 +27,6 @@ Creé una cuenta de usuario ("UsuarioSeguro") de tipo Estándar, distinta de las
 ### 2.2 Sistema actualizado
 
 ![Windows Update](screenshots/03-windows-update.png)
-*Windows Update: "¡Todo está actualizado!"*
-
 Ejecuté Windows Update y confirmé que el sistema no tiene actualizaciones de seguridad pendientes. Mantener el sistema parcheado reduce la superficie de ataque, ya que muchas vulnerabilidades explotadas en la práctica son fallas ya corregidas por el fabricante.
 
 ---
@@ -69,8 +48,6 @@ Hit:1 http://http.kali.org/kali kali-rolling InRelease
 ```
 
 ![Terminal Kali Linux](screenshots/04-linux-permisos-apt.png)
-*Terminal de Kali Linux — usuario "practicante" ejecutando `ls -l` y `sudo apt update`*
-
 **Interpretación de `ls -l`:** el primer carácter (`-`) indica que es un archivo regular. Los siguientes nueve caracteres se agrupan de a tres: `rw-` para el dueño (lectura y escritura), `rw-` para el grupo (lectura y escritura) y `r--` para el resto de los usuarios (solo lectura). Le siguen el usuario y grupo propietarios (`practicante`), el tamaño en bytes y la fecha de modificación.
 
 El comando `sudo apt update` consulta los repositorios configurados y actualiza la lista local de versiones disponibles. Se ejecuta con `sudo` —solicitando la contraseña del usuario `practicante`, como se ve en el prompt `[sudo] password for practicante:`— porque modificar el índice de paquetes del sistema requiere privilegios elevados, pero de forma puntual y controlada, no logueado como root permanentemente. Esto evita justamente el error #1 del principiante: trabajar siempre como root.
@@ -80,8 +57,6 @@ El comando `sudo apt update` consulta los repositorios configurados y actualiza 
 ## 4. La Red de Seguridad: Snapshot Inicial
 
 ![Snapshot](screenshots/05-snapshot.png)
-*Administrador de Instantáneas de VirtualBox: ambas VMs ("kali-linux-2026.2-virtualbox-amd64" y "windows") con la instantánea "hardening inicial" tomada*
-
 Con cada VM apagada, luego de aplicar todas las medidas anteriores (red NAT, usuario estándar, sistema actualizado), creé en ambas una instantánea (snapshot) llamada **"hardening inicial"** desde el Administrador de Instantáneas de VirtualBox.
 
 **¿Por qué es indispensable?**
